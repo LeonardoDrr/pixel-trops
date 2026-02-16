@@ -1,0 +1,37 @@
+GUIA RAPIDA DE GITHUB PARA PIXELTROPS
+=====================================
+
+IMPORTANTE: Los cambios NO se suben automaticamente.
+Tu tienes el control de que guardar y cuando enviarlo a tu equipo.
+Esto es bueno porque evita que subas errores sin querer.
+
+Sigue estos 3 pasos cada vez que quieras subir tu trabajo:
+
+PASO 1: Preparar los archivos (en la terminal)
+----------------------------------------------
+Escribe este comando para preparar todos los cambios nuevos:
+   git add .
+
+PASO 2: Guardar la version (Commit)
+-----------------------------------
+Escribe este comando con una pequena descripcion de lo que hiciste (entre comillas):
+   git commit -m "Describe aqui tus cambios, ej: arregle el salto del jefe"
+
+PASO 3: Enviar a GitHub (Push)
+------------------------------
+Escribe este comando para subirlo a internet:
+   git push
+
+-------------------------------------
+RESUMEN RAPIDO:
+1. git add .
+2. git commit -m "mensaje"
+3. git push
+-------------------------------------
+
+COMO ACTUALIZAR TU PROYECTO (Bajar cambios):
+--------------------------------------------
+Si tus compañeros subieron algo nuevo, usa este comando para descargarlo:
+   git pull
+
+NOTA: Es mejor que hagas "commit" de tus cosas antes de hacer "pull" para no perder nada.
