@@ -12,6 +12,7 @@ class_name Weapon
 @export var uses_arrows: bool = false
 @export var projectile_scene: PackedScene
 @export var projectile_speed: float = 100.0
+@export var tool_type: String = "" # "axe", "pickaxe", or empty for weapons
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 # Hitbox se asignará en _ready si existe, o busca hijos

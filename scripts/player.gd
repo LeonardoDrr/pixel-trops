@@ -32,7 +32,20 @@ var can_knockback: bool = true
 var mana: float = 100.0
 var max_mana: float = 100.0
 var mana_regen_rate: float = 0.5 # Mana per second (Slow regen)
+
 var arrows: int = 30
+
+# --- Inventory ---
+var wood: int = 0
+var copper_ore: int = 0
+
+# --- Auto-Harvesting (AFK) ---
+var is_gathering: bool = false
+var gathering_timer: float = 0.0
+var nearby_resources: Array = []
+var previous_weapon_index: int = -1
+const AFK_TIME_THRESHOLD: float = 3.0
+
 
 # --- UI ---
 const HUD_SCENE = preload("res://scenes/UI/HUD.tscn")
@@ -60,9 +73,15 @@ var weapon_scenes = [
 	preload("res://scenes/Weapons/Bows/Bow_Wood.tscn"),
 	preload("res://scenes/Weapons/Staffs/Staff_Fire.tscn")
 ]
+
+var tool_scenes = [
+	preload("res://scenes/Weapons/Tools/Axe_Copper.tscn"),
+	preload("res://scenes/Weapons/Tools/Pickaxe_Copper.tscn")
+]
 var current_weapon_index: int = 0
 
 func _ready() -> void:
+	add_to_group("player")
 	spawn_position = global_position
 	anim.animation_finished.connect(_on_animation_finished)
 	
@@ -126,7 +145,50 @@ func _process(delta: float) -> void:
 	if mana < max_mana:
 		mana += mana_regen_rate * delta
 		mana = min(mana, max_mana)
+	if mana < max_mana:
+		mana += mana_regen_rate * delta
+		mana = min(mana, max_mana)
 		hud.update_mana(int(mana), int(max_mana))
+		
+	# --- Auto-Harvest Logic ---
+	if velocity == Vector2.ZERO and not is_gathering and not is_dead:
+		# Check if near resources
+		_update_nearby_resources()
+		if nearby_resources.size() > 0:
+			gathering_timer += delta
+			if gathering_timer >= AFK_TIME_THRESHOLD:
+				_start_gathering_mode()
+		else:
+			gathering_timer = 0.0
+	elif velocity != Vector2.ZERO or Input.is_action_just_pressed("attack") or is_dead:
+		# Cancel gathering on move or manual attack
+		if is_gathering:
+			_stop_gathering_mode()
+		gathering_timer = 0.0
+		
+	if is_gathering:
+		# Auto-attack mechanism
+		if has_node("WeaponHolder") and $WeaponHolder.get_child_count() > 0:
+			var weapon = $WeaponHolder.get_child(0)
+			# Look at resource
+			if nearby_resources.size() > 0:
+				var target_res = nearby_resources[0]
+				if is_instance_valid(target_res):
+					var direction = (target_res.global_position - global_position).normalized()
+					# Aim at it
+					# (Optional: flip sprite)
+					if direction.x < 0: anim.flip_h = true
+					else: anim.flip_h = false
+					
+					# Attack
+					if weapon.has_method("attack") and weapon.can_attack:
+						weapon.attack()
+				else:
+					# Resource destroyed
+					nearby_resources.erase(target_res)
+					if nearby_resources.size() == 0:
+						_stop_gathering_mode()
+
 
 func _update_ui() -> void:
 	if hud:
@@ -340,3 +402,74 @@ func _play_if_not(anim_name: String) -> void:
 func _on_animation_finished() -> void:
 	if is_attacking:
 		is_attacking = false
+
+func add_item(item_name: String, amount: int) -> void:
+	match item_name:
+		"wood":
+			wood += amount
+			print("Wood collected: ", wood)
+		"copper_ore":
+			copper_ore += amount
+			print("Copper Ore collected: ", copper_ore)
+	# TODO: Update UI if/when inventory UI exists
+
+# --- Harvesting Helpers ---
+
+func _update_nearby_resources() -> void:
+	# Scan for resources in small radius
+	var space_state = get_world_2d().direct_space_state
+	var shape = CircleShape2D.new()
+	shape.radius = 40.0 # Small range
+	
+	var query = PhysicsShapeQueryParameters2D.new()
+	query.shape = shape
+	query.transform = global_transform
+	query.collision_mask = 9 # Check Layer 1 (World) and Layer 4 (Interactable)
+	
+	var results = space_state.intersect_shape(query)
+	nearby_resources.clear()
+	
+	for res in results:
+		var collider = res.collider
+		if collider.has_method("get_tool_type"): # Identify as resource
+			nearby_resources.append(collider)
+
+func _start_gathering_mode() -> void:
+	if nearby_resources.size() == 0: return
+	
+	# Identify needed tool
+	var target_resource = nearby_resources[0]
+	var required_tool = target_resource.get_tool_type()
+	
+	# Find tool in dedicated tool list
+	var found_tool_scene = null
+	
+	for scene in tool_scenes:
+		# Use metadata or instantiate to check type
+		# Optimization: Check scene path string or similar if consistent, but instantiation is safest for now
+		var t_instance = scene.instantiate()
+		var t_type = t_instance.get("tool_type")
+		t_instance.queue_free()
+		
+		if t_type == required_tool:
+			found_tool_scene = scene
+			break
+	
+	if found_tool_scene:
+		previous_weapon_index = current_weapon_index
+		is_gathering = true
+		equip_weapon(found_tool_scene)
+		# Clean selection in HUD if desired (pass -1)
+		if hud: hud.select_slot(-1) 
+		print("Auto-Harvesting Started: Switched to ", required_tool)
+	else:
+		print("No tool found for resource: ", required_tool)
+		gathering_timer = 0.0 # Reset timer to avoid spamming check
+
+func _stop_gathering_mode() -> void:
+	is_gathering = false
+	gathering_timer = 0.0
+	if previous_weapon_index != -1:
+		_switch_to_weapon(previous_weapon_index)
+		previous_weapon_index = -1
+		print("Auto-Harvesting Stopped: Weapon restored")

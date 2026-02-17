@@ -1,0 +1,49 @@
+[gd_scene load_steps=5 format=3 uid="uid://7yeqfw2qijg0"]
+
+[ext_resource type="Script" uid="uid://3iuet3awiq1q" path="res://scripts/weapon.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://c6cicpef5h1rq" path="res://assets/herramientas/picos/pico de cobre.png" id="2_sprite"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_sprite")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_sprite")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(11, 16)
+
+[node name="Pickaxe_Copper" type="Node2D"]
+scale = Vector2(0.5, 0.5)
+script = ExtResource("1_script")
+rotate_to_mouse = false
+damage = 2
+attack_cooldown = 0.8
+tool_type = "pickaxe"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(-4.7683716e-07, 0)
+rotation = -0.7847444
+scale = Vector2(0.21425092, 0.22221412)
+sprite_frames = SubResource("SpriteFrames_1")
+animation = &"attack"
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 13
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_1")

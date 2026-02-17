@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3 uid="uid://deeq4wwr8lo4t"]
+
+[ext_resource type="Script" uid="uid://dagx2tsykioow" path="res://scripts/Items/chest.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dj1ymxrgflqfa" path="res://assets/colocables/utilizables/cofre.png" id="2_sprite"]
+[ext_resource type="PackedScene" path="res://scenes/UI/InventoryUI.tscn" id="3_ui"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(24, 16)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
+radius = 60.0
+
+[node name="Chest" type="StaticBody2D"]
+z_index = -1
+input_pickable = true
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(20, -10.5)
+scale = Vector2(0.375, 0.328125)
+texture = ExtResource("2_sprite")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(20, -8)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+position = Vector2(20, -7)
+shape = SubResource("CircleShape2D_interaction")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="InventoryUI" parent="CanvasLayer" instance=ExtResource("3_ui")]
+visible = false

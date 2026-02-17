@@ -1,4 +1,4 @@
-[gd_scene load_steps=108 format=3 uid="uid://bi0s4sq6jjqn6"]
+[gd_scene load_steps=110 format=3 uid="uid://bi0s4sq6jjqn6"]
 
 [ext_resource type="Script" uid="uid://bcl4kp2csvcvt" path="res://scripts/boss_knight.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://bfhyhd7rswumx" path="res://assets/boss/Knight/Knight/noBKG_KnightAttack_strip.png" id="2_oyavf"]
@@ -774,5 +774,5 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerDetector"]
-position = Vector2(18, -1)
+position = Vector2(7, -1)
 shape = SubResource("RectangleShape2D_detector")

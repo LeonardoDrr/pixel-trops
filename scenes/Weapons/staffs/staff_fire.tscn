@@ -40,13 +40,16 @@ animations = [{
 
 [node name="Staff_Fire" instance=ExtResource("1_base")]
 weapon_id = 41
-projectile_scene = ExtResource("3_projectile")
-projectile_speed = 400.0
 attack_cooldown = 1.0
 mana_cost = 2
+projectile_scene = ExtResource("3_projectile")
+projectile_speed = 400.0
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 position = Vector2(4.7683716e-07, -2.9802322e-08)
 scale = Vector2(0.059848484, 0.080168776)
 sprite_frames = SubResource("SpriteFrames_staff")
 animation = &"Idle"
+
+[node name="CollisionShape2D" parent="Hitbox" index="0"]
+rotation = 0.0050310493

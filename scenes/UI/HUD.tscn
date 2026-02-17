@@ -40,13 +40,13 @@ theme_override_constants/separation = 4
 
 [node name="HPLabel" type="Label" parent="Control"]
 layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
+anchors_preset = -1
 anchor_right = 1.0
-offset_left = -240.0
+anchor_bottom = 1.0
+offset_left = 912.0
 offset_top = 17.0
 offset_right = -179.0
-offset_bottom = 37.0
+offset_bottom = -611.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
